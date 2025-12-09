@@ -54,6 +54,10 @@ jobs:
           echo "${PIPESTATUS[0]}" > exit-code.txt
         continue-on-error: true
 
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+
+
       - name: Set safe artifact name
         id: sanitize
         run: echo "safe_name=$(echo '${{ matrix.suite }}' | tr '/' '_' | tr '.' '_')" >> $GITHUB_OUTPUT
