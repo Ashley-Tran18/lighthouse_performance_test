@@ -1,0 +1,25 @@
+{
+    "THRESHOLDS": {
+        "PERFORMANCE": 0.60,
+        "ACCESSIBILITY": 0.60,
+        "BESTPRACTICES": 0.60,
+        "SEO": 0.60
+    },
+    "PAVED_PAGES": [
+        ["https://www.paveddigital.com/", "homepage"],
+        ["https://www.paveddigital.com/why-us", "why_us"],
+        ["https://www.paveddigital.com/what-we-do", "what_we_do"],
+        ["https://www.paveddigital.com/join-us", "join_us"],
+        ["https://www.paveddigital.com/contact-us", "contact_us"]
+    ],
+     "GSA_PAGES": [
+        ["https://www.gibadvisory.com/", "homepage"],
+        ["https://www.gibadvisory.com/about-gsa/", "about_us"],
+        ["https://www.gibadvisory.com/sectors-expertise/", "sectors-expertise"],
+        ["https://www.gibadvisory.com/projects/", "projects"],
+        ["https://www.gibadvisory.com/insights/", "insights"],
+        ["https://www.gibadvisory.com/our-clients/", "our-clients"],
+        ["https://www.gibadvisory.com/partnerships/", "partnerships"],
+        ["https://www.gibadvisory.com/get-in-touch/", "get-in-touch"]  
+    ]
+}

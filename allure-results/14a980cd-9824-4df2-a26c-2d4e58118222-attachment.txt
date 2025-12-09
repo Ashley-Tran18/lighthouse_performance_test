@@ -1,3 +1,0 @@
-Running Lighthouse on https://www.paveddigital.com/...
-Lighthouse JSON STDOUT: 
-Reports generated: JSON=lighthouse_reports/www.paveddigital.json, HTML=lighthouse_reports/www.paveddigital.report.html
