@@ -22,8 +22,8 @@ jobs:
       fail-fast: false
       matrix:
         suite:
-          - root/tests/test_performance_lighthouse_desktop.py
-          - root/tests/test_performance_lighthouse_mobile.py
+          - tests/test_performance_lighthouse_desktop.py
+          - tests/test_performance_lighthouse_mobile.py
 
 
 
