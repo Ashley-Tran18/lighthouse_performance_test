@@ -19,30 +19,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # device: [desktop, mobile]
-        # brand: [paved, gsa] # updated
-        # suite:
-        #   - root/tests/test_performance_lighthouse_desktop.py
-        #   - root/tests/test_performance_lighthouse_mobile.py
-        include:
-          - device: desktop
-            suite: root/tests/test_performance_lighthouse_desktop.py
-          - device: mobile
-            suite: root/tests/test_performance_lighthouse_mobile.py
+        device: [desktop, mobile]
+        brand: [paved, gsa] # updated
+        suite:
+          - root/tests/test_performance_lighthouse_desktop.py
+          - root/tests/test_performance_lighthouse_mobile.py
+
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
-
-
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          cache: 'npm' #updated
-
-      - name: Install Lighthouse globally (optional, nhưng an toàn hơn) #updated
-        run: npm install -g lighthouse
 
       - name: Install Chrome
         run: |
@@ -50,6 +36,14 @@ jobs:
           echo "deb [arch=amd64] http://dl.google.com/linux/chrome/deb/ stable main" | sudo tee /etc/apt/sources.list.d/google-chrome.list
           sudo apt-get update
           sudo apt-get install -y google-chrome-stable
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
+
+      - name: Install Lighthouse CLI
+        run: npm install -g lighthouse
 
       - name: Set up Python
         uses: actions/setup-python@v4
@@ -75,7 +69,8 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: allure-results-${{ matrix.device }}-${{ github.run_attempt }}
+          # name: allure-results-${{ matrix.device }}-${{ github.run_attempt }}
+          name: allure-results-${{ matrix.brand }}-${{ matrix.device }}
           path: allure-results/
           retention-days: 7
 
