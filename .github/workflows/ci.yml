@@ -205,7 +205,7 @@ jobs:
           name: allure-results-${{ matrix.brand }}-${{ matrix.device }}
           path: allure-results/
           retention-days: 7
-          overwrite: true   # FIX 409
+          # overwrite: true   # FIX 409
 
   generate-report:
     needs: lighthouse-test
@@ -238,7 +238,7 @@ jobs:
         uses: actions/upload-pages-artifact@v4
         with:
           path: public
-          overwrite: true   # prevent 409 here too
+          # overwrite: true   # prevent 409 here too
 
   deploy-report:
     needs: generate-report
