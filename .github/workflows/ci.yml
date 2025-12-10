@@ -41,9 +41,6 @@ jobs:
           node-version: 20
           cache: 'npm' #updated
 
-      - name: Install dependencies #updated
-        run: npm ci
-
       - name: Install Lighthouse globally (optional, nhưng an toàn hơn) #updated
         run: npm install -g lighthouse
 
