@@ -1,136 +1,88 @@
-name: Run LightHouse Performance Tests
+name: Lighthouse CI + Deploy Report
 
 on:
   push:
-    branches:
-      - main
+    branches: [ main, master ]
   pull_request:
-    branches:
-      - main
-  schedule:
-    - cron: 45 02 * * *
-
-permissions:
-  contents: read
-  pages: write
-  id-token: write
+    branches: [ main, master ]
 
 jobs:
-  test:
+  lighthouse:
     runs-on: ubuntu-latest
     strategy:
-      fail-fast: false
       matrix:
-        suite:
-          - root/tests/test_performance_lighthouse_desktop.py
-          - root/tests/test_performance_lighthouse_mobile.py
-
-
+        device: [desktop, mobile]
 
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Install Chrome
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y google-chrome-stable
-         
-
-      - name: Set up Python
-        uses: actions/setup-python@v4
+      # Cache node modules
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
         with:
-          python-version: "3.13"
+          node-version: 20
+          cache: 'npm'
 
       - name: Install dependencies
-        run: |
-          python3 -m pip install --upgrade pip
-          pip3 install -r requirements.txt
-          pip3 install allure-pytest
+        run: npm ci
 
-      - name: Set PYTHONPATH
-        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+      # Cài Playwright browsers (rất quan trọng, nếu thiếu sẽ exit code 2)
+      - name: Install Playwright browsers
+        run: npx playwright install --with-deps chromium
 
-      - name: Run tests with pytest
-        run: |
-          pytest -v ${{ matrix.suite }} --alluredir=allure-results --maxfail=1 --disable-warnings -q | tee pytest-output.txt
-          echo "${PIPESTATUS[0]}" > exit-code.txt
-        continue-on-error: true
+      # Chạy Lighthouse CI
+      - name: Run Lighthouse CI
+        run: npx lhci autorun
+        env:
+          LHCI_GITHUB_APP_TOKEN: ${{ secrets.LHCI_GITHUB_APP_TOKEN }}  # nếu bạn dùng server
 
-      - name: Set safe artifact name
-        id: sanitize
-        run: echo "safe_name=$(echo '${{ matrix.suite }}' | tr '/' '_' | tr '.' '_')" >> $GITHUB_OUTPUT
-
-      - name: Upload Allure Results
+      # Upload báo cáo HTML làm artifact (để debug khi cần)
+      - name: Upload Lighthouse report artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: allure-results-${{ steps.sanitize.outputs.safe_name }}
-          path: allure-results
+          name: lighthouse-report-${{ matrix.device }}
+          path: |
+            .lighthouseci/
+            **/*.html
 
-      - name: Fail the job if pytest failed
-        run: |
-          exit_code=$(cat exit-code.txt)
-          exit $exit_code
-        if: always()
-
-  generate-report:
+  deploy-pages:
+    needs: lighthouse
     runs-on: ubuntu-latest
-    needs: test
-    if: always()
-    outputs:
-      report-dir: allure-report
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
 
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install GitHub CLI and unzip
-        run: sudo apt-get update && sudo apt-get install -y gh jq unzip
-
-      - name: Download and merge allure results
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          mkdir -p allure-results
-          artifacts=$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts --jq '.artifacts[].name' | grep '^allure-results-')
-
-          echo "Merging artifacts:"
-          echo "$artifacts"
-
-          for name in $artifacts; do
-            url=$(gh api repos/${{ github.repository }}/actions/runs/${{ github.run_id }}/artifacts --jq ".artifacts[] | select(.name==\"$name\") | .archive_download_url")
-            curl -sL -H "Authorization: token $GH_TOKEN" "$url" -o "$name.zip"
-            unzip -q "$name.zip" -d temp
-            cp -r temp/* allure-results/
-            rm -rf temp "$name.zip"
-          done
-
-      - name: Download Allure CLI
-        run: |
-          wget https://github.com/allure-framework/allure2/releases/download/2.27.0/allure-2.27.0.tgz
-          tar -zxvf allure-2.27.0.tgz
-          sudo mv allure-2.27.0 /opt/allure
-          sudo ln -s /opt/allure/bin/allure /usr/bin/allure
-
-      - name: Generate Allure report
-        run: |
-          allure generate allure-results -o allure-report --clean
-
-      - name: Upload artifact for GitHub Pages
-        uses: actions/upload-pages-artifact@v4
+      # Tải lại toàn bộ artifact từ job lighthouse
+      - name: Download all Lighthouse artifacts
+        uses: actions/download-artifact@v4
         with:
-          path: allure-report
+          path: downloaded-artifacts
+          pattern: lighthouse-report-*
+          merge-multiple: true
 
-  deploy-report:
-    runs-on: ubuntu-latest
-    needs: generate-report
-    if: always()
-    environment:
-      name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
-    steps:
+      # Tạo thư mục _site để GitHub Pages deploy
+      - name: Prepare GitHub Pages
+        run: |
+          mkdir -p _site
+          cp -r downloaded-artifacts/.lighthouseci/* _site/ 2>/dev/null || echo "No reports yet"
+          # Đảm bảo luôn có ít nhất 1 file để tránh lỗi "No artifacts"
+          echo "<h1>Lighthouse Report</h1><p>Đang build...</p>" > _site/index.html
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-
