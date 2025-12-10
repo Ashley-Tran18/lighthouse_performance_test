@@ -19,11 +19,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        device: [desktop, mobile]
-        brand: [paved, gsa] # updated
-        suite:
-          - root/tests/test_performance_lighthouse_desktop.py
-          - root/tests/test_performance_lighthouse_mobile.py
+        # device: [desktop, mobile]
+        # brand: [paved, gsa] # updated
+        # suite:
+        #   - root/tests/test_performance_lighthouse_desktop.py
+        #   - root/tests/test_performance_lighthouse_mobile.py
+        include:
+          - device: desktop
+            suite: root/tests/test_performance_lighthouse_desktop.py
+          - device: mobile
+            suite: root/tests/test_performance_lighthouse_mobile.py
 
     steps:
       - name: Checkout code
@@ -38,6 +43,9 @@ jobs:
 
       - name: Install dependencies #updated
         run: npm ci
+
+      - name: Install Lighthouse globally (optional, nhưng an toàn hơn) #updated
+        run: npm install -g lighthouse
 
       - name: Install Chrome
         run: |
