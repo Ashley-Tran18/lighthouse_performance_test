@@ -90,9 +90,6 @@ jobs:
           pattern: allure-results-*
           path: all-allure-results
           merge-multiple: true
-        
-        with:
-          name: github-pages #=> updated
 
 
       - name: Move to correct folder
