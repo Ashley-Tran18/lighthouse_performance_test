@@ -100,7 +100,9 @@ jobs:
       - name: Move to correct folder
         run: |
           mkdir -p allure-results
-          find all-allure-results -type f -name "*.json" -exec cp {} allure-results/ \;
+          
+          cp -r all-allure-results/* allure-results/
+
 
       - name: Install Allure CLI
         run: |
