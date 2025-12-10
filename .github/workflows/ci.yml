@@ -20,7 +20,7 @@ jobs:
       fail-fast: false
       matrix:
         device: [desktop, mobile]
-        # brand: [paved, gsa] # updated
+        brand: [paved, gsa] # updated
         suite:
           - root/tests/test_performance_lighthouse_desktop.py
           - root/tests/test_performance_lighthouse_mobile.py
