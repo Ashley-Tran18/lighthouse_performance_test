@@ -19,11 +19,16 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        device: [desktop, mobile]
-        # brand: [paved, gsa] # updated
-        suite:
-          - root/tests/test_performance_lighthouse_desktop.py
-          - root/tests/test_performance_lighthouse_mobile.py
+        # device: [desktop, mobile]
+        # # brand: [paved, gsa] # updated
+        # suite:
+        #   - root/tests/test_performance_lighthouse_desktop.py
+        #   - root/tests/test_performance_lighthouse_mobile.py
+        include:
+        - device: desktop
+          suite: root/tests/test_performance_lighthouse_desktop.py
+        - device: mobile
+          suite: root/tests/test_performance_lighthouse_mobile.py
 
 
     steps:
@@ -62,21 +67,15 @@ jobs:
       - name: Run Lighthouse Tests
         id: run-tests
         run: |
-          pytest -v ${{ matrix.suite }} --alluredir=allure-results --maxfail=1 --disable-warnings -q
+          pytest -v ${{ matrix.suite }} --alluredir=allure-results --maxfail=0 --disable-warnings -q
           echo "exit_code=$?" >> $GITHUB_ENV
-
-      # - name: Run Lighthouse Tests
-      #   run: |
-      #     pytest -v root/tests/${{ matrix.suite }} \
-      #       --alluredir=allure-results \
-      #       --disable-warnings --maxfail=1 -q
 
       - name: Upload Allure Results Artifact
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          # name: allure-results-${{ matrix.device }}-${{ github.run_attempt }}
-          name: allure-results-${{ matrix.brand }}-${{ matrix.device }}
+          name: allure-results-${{ matrix.device }}-${{ github.run_attempt }}
+          # name: allure-results-${{ matrix.brand }}-${{ matrix.device }}
           path: allure-results/
           retention-days: 7
 

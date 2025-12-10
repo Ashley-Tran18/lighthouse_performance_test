@@ -2,6 +2,7 @@
 import allure
 import pytest
 import pytest_check as check
+check.enable_soft_assertions()   # ⭐ FIX HERE
 from base.base_test import BaseTest
 from base.lighthouse_runner import LighthouseRunner 
 from utils.config_reader import ConfigReader
