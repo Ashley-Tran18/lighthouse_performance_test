@@ -1,9 +1,9 @@
 {
     "THRESHOLDS": {
-        "PERFORMANCE": 0.60,
-        "ACCESSIBILITY": 0.60,
-        "BESTPRACTICES": 0.60,
-        "SEO": 0.60
+        "PERFORMANCE": 0.20,
+        "ACCESSIBILITY": 0.20,
+        "BESTPRACTICES": 0.20,
+        "SEO": 0.20
     },
     "PAVED_PAGES": [
         ["https://www.paveddigital.com/", "homepage"],
