@@ -59,11 +59,17 @@ jobs:
       - name: Set PYTHONPATH
         run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
 
+      # - name: Run Lighthouse Tests
+      #   id: run-tests
+      #   run: |
+      #     pytest -v ${{ matrix.suite }} --alluredir=allure-results --maxfail=1 --disable-warnings -q
+      #     echo "exit_code=$?" >> $GITHUB_ENV
+
       - name: Run Lighthouse Tests
-        id: run-tests
         run: |
-          pytest -v ${{ matrix.suite }} --alluredir=allure-results --maxfail=1 --disable-warnings -q
-          echo "exit_code=$?" >> $GITHUB_ENV
+          pytest -v root/tests/${{ matrix.suite }} \
+            --alluredir=allure-results \
+            --disable-warnings --maxfail=1 -q
 
       - name: Upload Allure Results Artifact
         if: always()
