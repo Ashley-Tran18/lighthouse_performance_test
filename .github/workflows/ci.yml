@@ -48,15 +48,14 @@ jobs:
           pip3 install -r requirements.txt
           pip3 install allure-pytest
 
+      - name: Set PYTHONPATH
+        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
+
       - name: Run tests with pytest
         run: |
           pytest -v ${{ matrix.suite }} --alluredir=allure-results --maxfail=1 --disable-warnings -q | tee pytest-output.txt
           echo "${PIPESTATUS[0]}" > exit-code.txt
         continue-on-error: true
-
-      - name: Set PYTHONPATH
-        run: echo "PYTHONPATH=$PWD" >> $GITHUB_ENV
-
 
       - name: Set safe artifact name
         id: sanitize
