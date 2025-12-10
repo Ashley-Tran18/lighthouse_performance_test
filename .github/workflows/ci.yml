@@ -19,11 +19,6 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        # device: [desktop, mobile]
-        # # brand: [paved, gsa] # updated
-        # suite:
-        #   - root/tests/test_performance_lighthouse_desktop.py
-        #   - root/tests/test_performance_lighthouse_mobile.py
         include:
         - device: desktop
           suite: root/tests/test_performance_lighthouse_desktop.py
@@ -75,13 +70,8 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: allure-results-${{ matrix.device }}-${{ github.run_attempt }}
-          # name: allure-results-${{ matrix.brand }}-${{ matrix.device }}
           path: allure-results/
           retention-days: 7
-
-      # - name: Fail job if tests failed
-      #   if: env.exit_code != '0' && env.exit_code != ''
-      #   run: exit $exit_code
 
   generate-report:
     needs: lighthouse-test
