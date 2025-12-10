@@ -4,3 +4,4 @@ requests==2.32.4
 selenium==4.25.0
 allure-pytest
 webdriver-manager
+pytest-check
