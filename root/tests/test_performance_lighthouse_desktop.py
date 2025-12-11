@@ -17,7 +17,7 @@ class TestPerformanceLighthouse(BaseTest):
     ]
     # Add mode param: desktop + mobile
     MODES = ["desktop"]
-    RUNS_PER_PAGE = 5 # ==> run 3 times
+    RUNS_PER_PAGE = 3 # ==> run 3 times
 
     # ======================================================
     # MAIN TEST
